@@ -1,47 +1,90 @@
 <template>
-  <div class="max-w-4xl mx-auto py-10">
-    <UCard>
-      <template #header>
-        <h2 class="text-xl font-bold">Create a Blog Post</h2>
-      </template>
+  <div class="grid grid-cols-3 gap-5">
+    <!-- Main Blog Form -->
+    <div class="col-span-2">
+      <UCard>
+        <template #header>
+          <h2 class="text-xl font-bold">Create a Blog Post</h2>
+        </template>
 
-      <UForm :state="form" @submit="saveBlog" class="space-y-5">
-        <!-- Blog Title & Slug -->
-        <UFormGroup label="Blog Title" name="title">
-          <UInput v-model="form.title" placeholder="Enter blog title" @input="generateSlug" required />
-        </UFormGroup>
+        <UForm @submit="saveBlog" class="space-y-5">
+          <UFormGroup label="Blog Title" :error="errors.title">
+            <UInput v-model="form.title" placeholder="Enter blog title" @input="generateSlug" />
+          </UFormGroup>
 
-        <UFormGroup label="Slug" name="slug">
-          <UInput v-model="form.slug" placeholder="blog-title-slug" />
-        </UFormGroup>
+          <!-- WYSIWYG Editor -->
+          <UFormGroup label="Blog Content" :error="errors.content">
+            <TiptapEditor v-model="form.content" class="custom-editor" @update:modelValue="updateMetaFromContent" />
+          </UFormGroup>
 
-        <!-- Blog Content (WYSIWYG Editor) -->
-        <UFormGroup label="Blog Content" name="content">
-          <UTextarea  v-model="form.content" placeholder="Write your blog content here..." />
-        </UFormGroup>
+          <!-- Drag and Drop Image Upload -->
+          <UFormGroup label="Blog Image" :error="errors.image">
+            <FilePond v-model="form.image" />
+          </UFormGroup>
 
-        <!-- Blog Image Upload -->
-        <UFormGroup label="Blog Image" name="image">
-          <UInput type="file" @change="uploadImage" />
-        </UFormGroup>
+          <div class="flex justify-end gap-3">
+            <UButton color="gray" @click="saveDraft">Save as Draft</UButton>
+            <UButton color="blue" @click="previewBlog">Preview</UButton>
+            <UButton type="submit" color="primary">Publish</UButton>
+          </div>
+        </UForm>
+      </UCard>
+    </div>
 
-        <!-- SEO Meta Details -->
-        <UAccordion :items="seoSettings" />
+    <!-- SEO & Open Graph Section (Always Visible) -->
+    <div class="col-span-1">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold">SEO & Open Graph</h3>
+          <UButton size="xs" @click="toggleSeoSettings">
+              {{ showSeoSettings ? "Collapse" : "Expand" }}
+            </UButton>
+        </template>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-end gap-3">
-          <UButton color="gray" @click="saveDraft">Save as Draft</UButton>
-          <UButton color="blue" @click="previewBlog">Preview</UButton>
-          <UButton type="submit" color="primary">Publish</UButton>
-        </div>
-      </UForm>
-    </UCard>
+        <UForm v-if="showSeoSettings"  class="space-y-3">
+          <UFormGroup label="Slug" :error="errors.slug">
+            <UInput v-model="form.slug" placeholder="blog-title-slug" />
+          </UFormGroup>
+
+          <UFormGroup label="Meta Title">
+            <UInput v-model="form.metaTitle" :placeholder="form.title" />
+          </UFormGroup>
+
+          <UFormGroup label="Meta Description">
+            <UTextarea v-model="form.metaDescription" placeholder="Short summary for search engines" />
+          </UFormGroup>
+
+          <UFormGroup label="Auto Generate Keywords">
+            <UToggle v-model="autoGenerateKeywords" @change="generateKeywords" />
+            <UInput v-if="!autoGenerateKeywords" v-model="form.metaKeywords" placeholder="comma, separated, keywords" />
+          </UFormGroup>
+
+          <UFormGroup label="OG Title">
+            <UInput v-model="form.ogTitle" :placeholder="form.title" />
+          </UFormGroup>
+
+          <UFormGroup label="OG Description">
+            <UTextarea v-model="form.ogDescription" placeholder="Short summary for social media" />
+          </UFormGroup>
+
+          <UFormGroup label="Indexing">
+            <div class="flex items-center gap-2">
+              <UToggle v-model="form.index" />
+              <UTooltip text="If enabled, the blog will be indexed on Google. If disabled, it will only be accessible via direct link." />
+            </div>
+          </UFormGroup>
+        </UForm>
+      </UCard>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref, reactive } from "vue";
+import Joi from "joi";
+import FilePond from "@/components/FilePond.vue";
 
-const form = ref({
+const form = reactive({
   title: "",
   slug: "",
   content: "",
@@ -51,31 +94,101 @@ const form = ref({
   metaKeywords: "",
   ogTitle: "",
   ogDescription: "",
-  ogImage: "",
+  index: true, // Default to indexing
+});
+const showSeoSettings = ref(false);
+
+const autoGenerateKeywords = ref(false);
+const errors = reactive({});
+
+// Slug Generation
+const generateSlug = () => {
+  form.slug = form.title.toLowerCase().replace(/\s+/g, "-");
+};
+
+const toggleSeoSettings = () => {
+  showSeoSettings.value = !showSeoSettings.value;
+};
+
+
+// Auto-generate Meta Description & Keywords
+const updateMetaFromContent = () => {
+  if (!form.metaDescription) {
+    form.metaDescription = form.content.substring(0, 150);
+  }
+  if (autoGenerateKeywords.value) {
+    generateKeywords();
+  }
+};
+
+const generateKeywords = () => {
+  if (autoGenerateKeywords.value) {
+    const words = form.content
+      .toLowerCase()
+      .match(/\b\w{4,}\b/g)
+      ?.slice(0, 10)
+      .join(", ") || "";
+    form.metaKeywords = words;
+  }
+};
+
+// Form Validation Schema
+const blogSchema = Joi.object({
+  title: Joi.string().min(5).required().messages({
+    "string.empty": "Title is required.",
+    "string.min": "Title must be at least 5 characters.",
+  }),
+  slug: Joi.string().required().messages({
+    "string.empty": "Slug is required.",
+  }),
+  content: Joi.string().min(50).required().messages({
+    "string.empty": "Content is required.",
+    "string.min": "Content must be at least 50 characters.",
+  }),
+  image: Joi.any().required().messages({
+    "any.required": "Blog image is required.",
+  }),
 });
 
-const seoSettings = [
-  { label: "SEO Settings", content: "Meta Title, Description, and Keywords" },
-  { label: "Open Graph & Social Media", content: "OG Title, Description, Image, URL" },
-];
+// Save Blog with Validation
+const saveBlog = (event) => {
+  event.preventDefault();
+  const { error } = blogSchema.validate(form, { abortEarly: false });
 
-const generateSlug = () => {
-  form.value.slug = form.value.title.toLowerCase().replace(/\s+/g, "-");
+  if (error) {
+    errors.value = error.details.reduce((acc, err) => {
+      acc[err.context.key] = err.message;
+      return acc;
+    }, {});
+  } else {
+    console.log("Blog Published:", form);
+    errors.value = {};
+  }
 };
 
-const uploadImage = (event) => {
-  form.value.image = event.target.files[0];
-};
-
+// Save Draft
 const saveDraft = () => {
-  console.log("Blog saved as draft:", form.value);
+  console.log("Blog saved as draft:", form);
 };
 
+// Preview Blog
 const previewBlog = () => {
-  console.log("Previewing blog:", form.value);
-};
-
-const saveBlog = () => {
-  console.log("Blog published:", form.value);
+  console.log("Previewing blog:", form);
 };
 </script>
+
+<style>
+.custom-editor {
+  min-height: 300px;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.custom-editor:focus,
+.u-input:focus,
+.u-textarea:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+</style>

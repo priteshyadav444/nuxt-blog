@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: true,
-  modules: ["@nuxt/ui"],
+  modules: ["@nuxt/ui", "@nuxt/image"],
   compatibilityDate: "2024-11-01",
   devtools: { enabled: false },
   runtimeConfig: {
@@ -9,15 +9,5 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: "http:localhost:8000",
     },
-  },
-  app: {
-    head: {
-      link: [
-        {
-          rel: "stylesheet",
-          href: "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
-        },
-      ],
-    },
-  },
+  }
 });

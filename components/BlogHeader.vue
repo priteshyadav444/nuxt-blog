@@ -18,7 +18,7 @@
             <!-- Authentication Buttons -->
             <div class="flex items-center space-x-4">
                 <NuxtLink to="/auth/login" class="text-gray-700 dark:text-gray-300 hover:underline">Login</NuxtLink>
-                <UButton to="/auth/register" color="black" class="px-4 py-2 rounded-lg">Get Started</UButton>
+                <UButton to="/auth/register" color="primary" class="px-4 py-2 rounded-lg">Get Started</UButton>
             </div>
         </UContainer>
     </header>
