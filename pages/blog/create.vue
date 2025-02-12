@@ -1,20 +1,26 @@
 <template>
-  <div class="grid grid-cols-3 gap-5">
+  <div class="grid grid-cols-3 gap-6 m-2">
     <!-- Main Blog Form -->
     <div class="col-span-2">
-      <UCard>
+      <UCard class="shadow-sm border border-gray-200">
         <template #header>
-          <h2 class="text-xl font-bold">Create a Blog Post</h2>
+          <h2 class="text-xl font-semibold">Create a Blog Post</h2>
         </template>
 
-        <UForm @submit="saveBlog" class="space-y-5">
+        <UForm @submit="saveBlog" class="space-y-6">
           <UFormGroup label="Blog Title" :error="errors.title">
             <UInput v-model="form.title" placeholder="Enter blog title" @input="generateSlug" />
           </UFormGroup>
 
           <!-- WYSIWYG Editor -->
           <UFormGroup label="Blog Content" :error="errors.content">
-            <TiptapEditor v-model="form.content" class="custom-editor" @update:modelValue="updateMetaFromContent" />
+            <div class="border-2 border-blue-400 rounded-lg focus-within:border-blue-600">
+              <TiptapEditor
+                v-model="form.content"
+                class="custom-editor p-3"
+                @update:modelValue="updateMetaFromContent"
+              />
+            </div>
           </UFormGroup>
 
           <!-- Drag and Drop Image Upload -->
@@ -22,7 +28,7 @@
             <FilePond v-model="form.image" />
           </UFormGroup>
 
-          <div class="flex justify-end gap-3">
+          <div class="flex justify-end gap-4">
             <UButton color="gray" @click="saveDraft">Save as Draft</UButton>
             <UButton color="blue" @click="previewBlog">Preview</UButton>
             <UButton type="submit" color="primary">Publish</UButton>
@@ -31,17 +37,19 @@
       </UCard>
     </div>
 
-    <!-- SEO & Open Graph Section (Always Visible) -->
+    <!-- SEO & Open Graph Section -->
     <div class="col-span-1">
-      <UCard>
+      <UCard class="shadow-sm border border-gray-200">
         <template #header>
-          <h3 class="text-lg font-semibold">SEO & Open Graph</h3>
-          <UButton size="xs" @click="toggleSeoSettings">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold">SEO & Open Graph</h3>
+            <UButton size="xs" variant="outline" @click="toggleSeoSettings">
               {{ showSeoSettings ? "Collapse" : "Expand" }}
             </UButton>
+          </div>
         </template>
 
-        <UForm v-if="showSeoSettings"  class="space-y-3">
+        <UForm v-if="showSeoSettings" class="space-y-4">
           <UFormGroup label="Slug" :error="errors.slug">
             <UInput v-model="form.slug" placeholder="blog-title-slug" />
           </UFormGroup>
@@ -78,6 +86,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, reactive } from "vue";

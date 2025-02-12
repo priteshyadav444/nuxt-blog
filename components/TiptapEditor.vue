@@ -1,116 +1,176 @@
 <template>
-    <editor-content class="border p-4 rounded-md" :editor="editor" />
+  <ckeditor v-if="editor" v-model="data" :editor="editor" :config="config" />
 </template>
 
 <script setup>
-import { Editor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
+import { ref, computed } from 'vue';
+import { Ckeditor, useCKEditorCloud } from '@ckeditor/ckeditor5-vue';
 
-const editor = ref(null);
-
-onMounted(() => {
-    editor.value = new Editor({
-        content: "<p>Start writing your blog...</p>",
-        extensions: [StarterKit],
-    });
+const cloud = useCKEditorCloud({
+  version: '44.2.0',
+  premium: true
 });
 
-// onBeforeUnmount(() => {
-//     editor.value.destroy();
-// });
+const data = ref('<p>Hello world!</p>');
+const editor = computed(() => {
+  if (!cloud.data.value) {
+    return null;
+  }
+
+  return cloud.data.value.CKEditor.ClassicEditor;
+});
+
+const config = computed(() => {
+  if (!cloud.data.value) {
+    return null;
+  }
+
+  const { Essentials, Paragraph, Bold, Italic } = cloud.data.value.CKEditor;
+
+  return {
+    licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Njk5MDM5OTksImp0aSI6IjBiZmE0MTFhLWYxMjAtNDhjMi1hYzYzLTkxZGJiZTY1ZWYyNCIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiZjg1ZDA2MTcifQ.2HRnZKOfRqAPkWKZjV-XUwZJTRr3dGpUPc2nk7LaltuOfe1uJ8Hi3PChfSB9mVuO2ZMQQHVE2sEJn3BrKzzWVg',
+    plugins: [Essentials, Paragraph, Bold, Italic],
+    toolbar: ['undo', 'redo', '|', 'bold', 'italic', '|']
+  };
+});
 </script>
 
 
-<style lang="scss">
-/* Basic editor styles */
-.tiptap {
-    :first-child {
-        margin-top: 0;
-    }
 
-    /* List styles */
-    ul,
-    ol {
-        padding: 0 1rem;
-        margin: 1.25rem 1rem 1.25rem 0.4rem;
+<!-- <template>
+  <ckeditor v-if="editor" v-model="data" :editor="editor" :config="config" />
+</template>
 
-        li p {
-            margin-top: 0.25em;
-            margin-bottom: 0.25em;
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { Ckeditor, useCKEditorCloud } from '@ckeditor/ckeditor5-vue';
+
+const cloud = useCKEditorCloud({
+  version: '44.2.0',
+  premium: true
+});
+
+const data = ref('<p>Hello world!</p>');
+const editor = ref(null);
+
+onMounted(() => {
+  if (cloud.data.value) {
+    editor.value = cloud.data.value.CKEditor.ClassicEditor;
+  }
+});
+
+const config = computed(() => {
+  if (!cloud.data.value) return null;
+  const {
+    Autoformat,
+    AutoImage,
+    Autosave,
+    BalloonToolbar,
+    BlockQuote,
+    BlockToolbar,
+    Bold,
+    CloudServices,
+    Code,
+    CodeBlock,
+    Essentials,
+    FindAndReplace,
+    FontBackgroundColor,
+    FontColor,
+    FontFamily,
+    FontSize,
+    Heading,
+    ImageBlock,
+    ImageCaption,
+    ImageInline,
+    ImageInsert,
+    ImageInsertViaUrl,
+    ImageResize,
+    ImageStyle,
+    ImageTextAlternative,
+    ImageToolbar,
+    ImageUpload,
+    Indent,
+    IndentBlock,
+    Italic,
+    Link,
+    LinkImage,
+    List,
+    ListProperties,
+    Mention,
+    Paragraph,
+    SimpleUploadAdapter,
+    Table,
+    TableCaption,
+    TableCellProperties,
+    TableColumnResize,
+    TableProperties,
+    TableToolbar,
+    TextTransformation,
+    TodoList,
+    Underline
+  } = cloud.data.value.CKEditor;
+
+  return {
+    licenseKey: 'your-license-key',
+    toolbar: {
+      items: [
+        'heading', '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+        'bold', 'italic', 'underline', 'code', '|', 'link', 'insertImage', 'insertTable', 'blockQuote', 'codeBlock', '|',
+        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+      ],
+      shouldNotGroupWhenFull: false
+    },
+    plugins: [
+      Autoformat, AutoImage, Autosave, BalloonToolbar, BlockQuote, BlockToolbar, Bold, CloudServices, Code, CodeBlock,
+      Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, Heading, ImageBlock, ImageCaption,
+      ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload,
+      Indent, IndentBlock, Italic, Link, LinkImage, List, ListProperties, Mention, Paragraph, SimpleUploadAdapter, Table,
+      TableCaption, TableCellProperties, TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList,
+      Underline
+    ],
+    simpleUpload: {
+      uploadUrl: 'http://localhost:3000/api/blog-file-upload',
+      withCredentials: true,
+      headers: {
+        'X-CSRF-TOKEN': 'CSRF-Token',
+        Authorization: 'Bearer <JSON Web Token>'
+      }
+    },
+    balloonToolbar: ['bold', 'italic', '|', 'link', 'insertImage', '|', 'bulletedList', 'numberedList'],
+    blockToolbar: ['fontSize', 'fontColor', 'fontBackgroundColor', '|', 'bold', 'italic', '|', 'link', 'insertImage', 'insertTable', '|', 'bulletedList', 'numberedList', 'outdent', 'indent'],
+    fontFamily: { supportAllValues: true },
+    fontSize: { options: [10, 12, 14, 'default', 18, 20, 22], supportAllValues: true },
+    heading: {
+      options: [
+        { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+        { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+        { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+        { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+        { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+        { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+        { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+      ]
+    },
+    image: {
+      toolbar: ['toggleImageCaption', 'imageTextAlternative', '|', 'imageStyle:inline', 'imageStyle:wrapText', 'imageStyle:breakText', '|', 'resizeImage']
+    },
+    initialData: '<h2> Title </h2> <p> Write your article </p>',
+    link: {
+      addTargetToExternalLinks: true,
+      defaultProtocol: 'https://',
+      decorators: {
+        toggleDownloadable: {
+          mode: 'manual',
+          label: 'Downloadable',
+          attributes: { download: 'file' }
         }
+      }
+    },
+    list: { properties: { styles: true, startIndex: true, reversed: true } },
+    placeholder: 'Type or paste your content here!',
+    table: {
+      contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
     }
-
-    /* Heading styles */
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        line-height: 1.1;
-        margin-top: 2.5rem;
-        text-wrap: pretty;
-    }
-
-    h1,
-    h2 {
-        margin-top: 3.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    h1 {
-        font-size: 1.4rem;
-    }
-
-    h2 {
-        font-size: 1.2rem;
-    }
-
-    h3 {
-        font-size: 1.1rem;
-    }
-
-    h4,
-    h5,
-    h6 {
-        font-size: 1rem;
-    }
-
-    /* Code and preformatted text styles */
-    code {
-        background-color: var(--purple-light);
-        border-radius: 0.4rem;
-        color: var(--black);
-        font-size: 0.85rem;
-        padding: 0.25em 0.3em;
-    }
-
-    pre {
-        background: var(--black);
-        border-radius: 0.5rem;
-        color: var(--white);
-        font-family: 'JetBrainsMono', monospace;
-        margin: 1.5rem 0;
-        padding: 0.75rem 1rem;
-
-        code {
-            background: none;
-            color: inherit;
-            font-size: 0.8rem;
-            padding: 0;
-        }
-    }
-
-    blockquote {
-        border-left: 3px solid var(--gray-3);
-        margin: 1.5rem 0;
-        padding-left: 1rem;
-    }
-
-    hr {
-        border: none;
-        border-top: 1px solid var(--gray-2);
-        margin: 2rem 0;
-    }
-}
-</style>
+  };
+});
+</script> -->
