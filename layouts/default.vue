@@ -1,9 +1,13 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
   <div>
-    <BlogHeader />
+    <CustomHeader />
     <UContainer as="main">
       <slot />
     </UContainer>
-    <BlogFooter />
+    <CustomFooter />
   </div>
 </template>

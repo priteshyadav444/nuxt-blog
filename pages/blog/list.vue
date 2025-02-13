@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Author Section -->
       <aside class="md:w-1/4">
-        <UCard :ui="{ rounded: 'lg', shadow: 'lg' }">
+        <UCard class="shadow-lg">
           <template #header>
             <div class="flex justify-center gap-2 mt-2">
               <UAvatar :src="author.avatar" :alt="author.name" size="xl" class="mx-auto" />
@@ -12,14 +12,20 @@
           <div class="p-3 text-center">
             <p class="font-semibold text-lg">{{ author.name }}</p>
             <p class="text-gray-500 text-sm">{{ author.title }}</p>
-            <div class="flex justify-center gap-2 mt-2">
+            <div class="flex justify-center gap-2 mt-3">
               <a v-for="item in author.social" :key="item.icon" :href="item.link" target="_blank">
-                <UButton size="xs" :icon="item.icon" color="black" variant="ghost" />
+                <UButton size="xs" :icon="item.icon" color="gray" variant="ghost" class="hover:text-primary" />
               </a>
             </div>
-            <UButton class="mt-3 w-full" color="primary" variant="outline">
-              Follow
-            </UButton>
+            <div class="flex flex-col gap-2 mt-4">
+              <UButton color="primary" variant="outline">
+                Follow
+              </UButton>
+              <UButton color="black" variant="solid">
+                <UIcon name="i-heroicons-envelope" class="mr-2" />
+                Subscribe
+              </UButton>
+            </div>
           </div>
         </UCard>
       </aside>
@@ -27,28 +33,11 @@
       <!-- Blog Posts -->
       <div class="md:w-3/4">
         <UGrid :cols="{ xs: 1, md: 1 }" gap="4">
-          <UCard v-for="post in visibleBlogPosts" :key="post.id"
-            :ui="{ rounded: 'lg', shadow: 'lg', border: 'border-b' }">
-            <NuxtLink :to="`/blog/${post.slug}`" class="text-blue-500 hover:underline">
-              <div class="p-3 flex flex-col md:flex-row gap-4 items-start">
-                <div class="flex-1">
-                  <h2 class="text-lg font-semibold mb-1">{{ post.title }}</h2>
-                  <p class="text-gray-600 text-xs">{{ post.date }} - {{ post.readTime }}</p>
-                  <p class="text-gray-700 mt-2">{{ post.description }}</p>
-                  <div class="mt-3 flex flex-wrap gap-2">
-                    <UBadge v-for="tag in post.tags" :key="tag" :label="tag" size="sm" variant="subtle"
-                      color="primary" />
-                  </div>
-                </div>
-                <img v-if="post.image" :src="post.image" alt="Post Image"
-                  class="w-24 h-24 object-cover rounded-md flex-shrink-0" />
-              </div>
-            </NuxtLink>
-          </UCard>
+          <BlogPostItem v-for="post in visibleBlogPosts" :key="post.id" :post="post" />
         </UGrid>
 
         <!-- Load More Button -->
-        <div class="flex justify-center mt-4">
+        <div class="flex justify-center mt-6">
           <UButton v-if="visibleBlogPosts.length < blogPosts.length" @click="loadMore" color="primary">
             Load More
           </UButton>

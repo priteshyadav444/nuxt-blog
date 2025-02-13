@@ -1,97 +1,81 @@
 <template>
-  <div class="grid grid-cols-3 gap-6 m-2">
-    <!-- Main Blog Form -->
-    <div class="col-span-2">
-      <UCard class="shadow-sm border border-gray-200">
-        <template #header>
-          <h2 class="text-xl font-semibold">Create a Blog Post</h2>
-        </template>
+  <div class="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+    <UCard class="shadow-md border border-gray-300 rounded-lg">
+      <template #header>
+        <h2 class="text-2xl font-bold">Create a Blog Post</h2>
+      </template>
 
-        <UForm @submit="saveBlog" class="space-y-6">
-          <UFormGroup label="Blog Title" :error="errors.title">
-            <UInput v-model="form.title" placeholder="Enter blog title" @input="generateSlug" />
-          </UFormGroup>
+      <UForm @submit="saveBlog" :state="form" class="space-y-6">
+        <UFormGroup label="Blog Title" :error="errors.title">
+          <UInput v-model="form.title" placeholder="Enter blog title" @input="generateSlug" />
+        </UFormGroup>
 
-          <!-- WYSIWYG Editor -->
-          <UFormGroup label="Blog Content" :error="errors.content">
-            <div class="border-2 border-blue-400 rounded-lg focus-within:border-blue-600">
-              <TiptapEditor
-                v-model="form.content"
-                class="custom-editor p-3"
-                @update:modelValue="updateMetaFromContent"
-              />
-            </div>
-          </UFormGroup>
+        <UFormGroup label="Blog Content" :error="errors.content">
+          <CustomCkEditor v-model="form.content" class="custom-editor p-3" @update:modelValue="updateMetaFromContent" />
+        </UFormGroup>
 
-          <!-- Drag and Drop Image Upload -->
-          <UFormGroup label="Blog Image" :error="errors.image">
-            <FilePond v-model="form.image" />
-          </UFormGroup>
+        <UFormGroup label="Blog Image" :error="errors.image">
+          <FilePond v-model="form.image" />
+        </UFormGroup>
 
-          <div class="flex justify-end gap-4">
-            <UButton color="gray" @click="saveDraft">Save as Draft</UButton>
-            <UButton color="blue" @click="previewBlog">Preview</UButton>
-            <UButton type="submit" color="primary">Publish</UButton>
+        <!-- SEO & Meta Details -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow-md border border-gray-300 relative">
+          <button @click="toggleSeo" class="absolute top-2 right-2 text-xs px-2 py-1 border rounded-md bg-gray-200 hover:bg-gray-300">↕</button>
+          <h3 class="text-lg font-semibold mb-3">SEO & Meta Details</h3>
+          
+          <div v-show="showSeo">
+            <UFormGroup label="Slug" :error="errors.slug">
+              <UInput v-model="form.slug" placeholder="blog-title-slug" />
+            </UFormGroup>
+
+            <UFormGroup label="Meta Title">
+              <UInput v-model="form.metaTitle" :placeholder="form.title" />
+            </UFormGroup>
+
+            <UFormGroup label="Meta Description">
+              <UTextarea v-model="form.metaDescription" placeholder="Short summary for search engines" />
+            </UFormGroup>
+
+            <UFormGroup label="Auto Generate Keywords">
+              <div class="flex items-center gap-2">
+                <UToggle v-model="autoGenerateKeywords" @change="generateKeywords" />
+                <UInput v-if="!autoGenerateKeywords" v-model="form.metaKeywords" placeholder="comma, separated, keywords" />
+              </div>
+            </UFormGroup>
+
+            <UFormGroup label="OG Title">
+              <UInput v-model="form.ogTitle" :placeholder="form.title" />
+            </UFormGroup>
+
+            <UFormGroup label="OG Description">
+              <UTextarea v-model="form.ogDescription" placeholder="Short summary for social media" />
+            </UFormGroup>
+
+            <UFormGroup label="Indexing">
+              <div class="flex items-center gap-2">
+                <UToggle v-model="form.index" />
+                <UTooltip text="Enable indexing for Google or disable for private posts." />
+              </div>
+            </UFormGroup>
           </div>
-        </UForm>
-      </UCard>
-    </div>
+        </div>
 
-    <!-- SEO & Open Graph Section -->
-    <div class="col-span-1">
-      <UCard class="shadow-sm border border-gray-200">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold">SEO & Open Graph</h3>
-            <UButton size="xs" variant="outline" @click="toggleSeoSettings">
-              {{ showSeoSettings ? "Collapse" : "Expand" }}
-            </UButton>
-          </div>
-        </template>
-
-        <UForm v-if="showSeoSettings" class="space-y-4">
-          <UFormGroup label="Slug" :error="errors.slug">
-            <UInput v-model="form.slug" placeholder="blog-title-slug" />
-          </UFormGroup>
-
-          <UFormGroup label="Meta Title">
-            <UInput v-model="form.metaTitle" :placeholder="form.title" />
-          </UFormGroup>
-
-          <UFormGroup label="Meta Description">
-            <UTextarea v-model="form.metaDescription" placeholder="Short summary for search engines" />
-          </UFormGroup>
-
-          <UFormGroup label="Auto Generate Keywords">
-            <UToggle v-model="autoGenerateKeywords" @change="generateKeywords" />
-            <UInput v-if="!autoGenerateKeywords" v-model="form.metaKeywords" placeholder="comma, separated, keywords" />
-          </UFormGroup>
-
-          <UFormGroup label="OG Title">
-            <UInput v-model="form.ogTitle" :placeholder="form.title" />
-          </UFormGroup>
-
-          <UFormGroup label="OG Description">
-            <UTextarea v-model="form.ogDescription" placeholder="Short summary for social media" />
-          </UFormGroup>
-
-          <UFormGroup label="Indexing">
-            <div class="flex items-center gap-2">
-              <UToggle v-model="form.index" />
-              <UTooltip text="If enabled, the blog will be indexed on Google. If disabled, it will only be accessible via direct link." />
-            </div>
-          </UFormGroup>
-        </UForm>
-      </UCard>
-    </div>
+        <div class="flex justify-end gap-4 mt-6">
+          <UButton color="gray" @click="saveDraft">Save as Draft</UButton>
+          <UButton color="blue" @click="previewBlog">Preview</UButton>
+          <UButton type="submit" color="primary">Publish</UButton>
+        </div>
+      </UForm>
+    </UCard>
   </div>
 </template>
-
 
 <script setup>
 import { ref, reactive } from "vue";
 import Joi from "joi";
-import FilePond from "@/components/FilePond.vue";
+import FilePond from "~/components/form/FilePond.vue";
+import CustomCkEditor from "../../components/form/CustomCkEditor.vue";
+
 
 const form = reactive({
   title: "",
@@ -103,24 +87,20 @@ const form = reactive({
   metaKeywords: "",
   ogTitle: "",
   ogDescription: "",
-  index: true, // Default to indexing
+  index: true,
 });
-const showSeoSettings = ref(false);
-
 const autoGenerateKeywords = ref(false);
 const errors = reactive({});
+const showSeo = ref(false);
 
-// Slug Generation
+const toggleSeo = () => {
+  showSeo.value = !showSeo.value;
+};
+
 const generateSlug = () => {
   form.slug = form.title.toLowerCase().replace(/\s+/g, "-");
 };
 
-const toggleSeoSettings = () => {
-  showSeoSettings.value = !showSeoSettings.value;
-};
-
-
-// Auto-generate Meta Description & Keywords
 const updateMetaFromContent = () => {
   if (!form.metaDescription) {
     form.metaDescription = form.content.substring(0, 150);
@@ -141,7 +121,6 @@ const generateKeywords = () => {
   }
 };
 
-// Form Validation Schema
 const blogSchema = Joi.object({
   title: Joi.string().min(5).required().messages({
     "string.empty": "Title is required.",
@@ -159,7 +138,6 @@ const blogSchema = Joi.object({
   }),
 });
 
-// Save Blog with Validation
 const saveBlog = (event) => {
   event.preventDefault();
   const { error } = blogSchema.validate(form, { abortEarly: false });
@@ -175,12 +153,10 @@ const saveBlog = (event) => {
   }
 };
 
-// Save Draft
 const saveDraft = () => {
   console.log("Blog saved as draft:", form);
 };
 
-// Preview Blog
 const previewBlog = () => {
   console.log("Previewing blog:", form);
 };
@@ -189,14 +165,6 @@ const previewBlog = () => {
 <style>
 .custom-editor {
   min-height: 300px;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.custom-editor:focus,
-.u-input:focus,
-.u-textarea:focus {
-  outline: none !important;
   border: none !important;
   box-shadow: none !important;
 }

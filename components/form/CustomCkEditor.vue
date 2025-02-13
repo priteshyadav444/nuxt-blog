@@ -11,12 +11,11 @@ const cloud = useCKEditorCloud({
   premium: true
 });
 
-const data = ref('<p>Hello world!</p>');
+const data = ref('');
 const editor = computed(() => {
   if (!cloud.data.value) {
     return null;
   }
-
   return cloud.data.value.CKEditor.ClassicEditor;
 });
 
@@ -25,42 +24,6 @@ const config = computed(() => {
     return null;
   }
 
-  const { Essentials, Paragraph, Bold, Italic } = cloud.data.value.CKEditor;
-
-  return {
-    licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Njk5MDM5OTksImp0aSI6IjBiZmE0MTFhLWYxMjAtNDhjMi1hYzYzLTkxZGJiZTY1ZWYyNCIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiZjg1ZDA2MTcifQ.2HRnZKOfRqAPkWKZjV-XUwZJTRr3dGpUPc2nk7LaltuOfe1uJ8Hi3PChfSB9mVuO2ZMQQHVE2sEJn3BrKzzWVg',
-    plugins: [Essentials, Paragraph, Bold, Italic],
-    toolbar: ['undo', 'redo', '|', 'bold', 'italic', '|']
-  };
-});
-</script>
-
-
-
-<!-- <template>
-  <ckeditor v-if="editor" v-model="data" :editor="editor" :config="config" />
-</template>
-
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { Ckeditor, useCKEditorCloud } from '@ckeditor/ckeditor5-vue';
-
-const cloud = useCKEditorCloud({
-  version: '44.2.0',
-  premium: true
-});
-
-const data = ref('<p>Hello world!</p>');
-const editor = ref(null);
-
-onMounted(() => {
-  if (cloud.data.value) {
-    editor.value = cloud.data.value.CKEditor.ClassicEditor;
-  }
-});
-
-const config = computed(() => {
-  if (!cloud.data.value) return null;
   const {
     Autoformat,
     AutoImage,
@@ -77,8 +40,8 @@ const config = computed(() => {
     FontBackgroundColor,
     FontColor,
     FontFamily,
-    FontSize,
     Heading,
+    FontSize,
     ImageBlock,
     ImageCaption,
     ImageInline,
@@ -111,23 +74,22 @@ const config = computed(() => {
   } = cloud.data.value.CKEditor;
 
   return {
-    licenseKey: 'your-license-key',
-    toolbar: {
-      items: [
-        'heading', '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-        'bold', 'italic', 'underline', 'code', '|', 'link', 'insertImage', 'insertTable', 'blockQuote', 'codeBlock', '|',
-        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-      ],
-      shouldNotGroupWhenFull: false
-    },
+    licenseKey: `eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Njk5MDM5OTksImp0aSI6IjBiZmE0MTFhLWYxMjAtNDhjMi1hYzYzLTkxZGJiZTY1ZWYyNCIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiZjg1ZDA2MTcifQ.2HRnZKOfRqAPkWKZjV-XUwZJTRr3dGpUPc2nk7LaltuOfe1uJ8Hi3PChfSB9mVuO2ZMQQHVE2sEJn3BrKzzWVg`,
     plugins: [
+      Heading,
       Autoformat, AutoImage, Autosave, BalloonToolbar, BlockQuote, BlockToolbar, Bold, CloudServices, Code, CodeBlock,
-      Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, Heading, ImageBlock, ImageCaption,
+      Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, ImageBlock, ImageCaption,
       ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload,
       Indent, IndentBlock, Italic, Link, LinkImage, List, ListProperties, Mention, Paragraph, SimpleUploadAdapter, Table,
       TableCaption, TableCellProperties, TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList,
       Underline
     ],
+    toolbar: {
+      items: ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+        'underline', 'code', '|', 'link', 'insertImage', 'insertTable', 'blockQuote', 'codeBlock', '|',
+        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'],
+      shouldNotGroupWhenFull: false
+    },
     simpleUpload: {
       uploadUrl: 'http://localhost:3000/api/blog-file-upload',
       withCredentials: true,
@@ -173,4 +135,39 @@ const config = computed(() => {
     }
   };
 });
-</script> -->
+</script>
+
+
+<style>
+
+.ck-content h1 {
+  font-size: 2em !important;
+  font-weight: bold !important;
+}
+
+.ck-content h2 {
+  font-size: 1.75em !important;
+  font-weight: bold !important;
+}
+
+.ck-content h3 {
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+}
+
+.ck-content h4 {
+  font-size: 1.25em !important;
+  font-weight: bold !important;
+}
+
+.ck-content h5 {
+  font-size: 1.1em !important;
+  font-weight: bold !important;
+}
+
+.ck-content h6 {
+  font-size: 1em !important;
+  font-weight: bold !important;
+}
+
+</style>
