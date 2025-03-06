@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-
+import RightSidebar from "~/components/common/RightSidebar.vue";
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

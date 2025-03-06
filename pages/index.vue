@@ -14,10 +14,10 @@
                 </div>
                 <!-- Carousel Controls -->
                 <button @click="prevBlog" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full">
-                    ◀
+                    <
                 </button>
                 <button @click="nextBlog" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full">
-                    ▶
+                    >
                 </button>
             </div>
         </div>
