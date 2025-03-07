@@ -9,5 +9,5 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: "http:localhost:8000",
     },
-  }
+  },
 });

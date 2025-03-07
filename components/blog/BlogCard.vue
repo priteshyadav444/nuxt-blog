@@ -24,7 +24,5 @@
 </template>
 
 <script setup>
-import { NuxtLink } from '#components';
-
 defineProps({ blog: Object });
 </script>

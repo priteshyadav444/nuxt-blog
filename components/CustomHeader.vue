@@ -1,5 +1,5 @@
 <template>
-    <header class="border-b bg-white dark:bg-gray-900 shadow-md">
+    <header class="border-b bg-white dark:bg-gray-900 shadow-md mb-1">
         <UContainer class="flex items-center justify-between py-4">
             <!-- Logo -->
             <NuxtLink to="/" class="text-xl font-bold flex items-center text-gray-900 dark:text-gray-100">
