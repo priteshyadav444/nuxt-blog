@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer transition-transform hover:scale-105">
-        <img :src="blog.image" class="w-full h-44 object-cover">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer transition-transform">
+        <img :src="blog.image" class="w-full h-44 object-cover grayscale-0 hover:grayscale transition duration-300">
         <div class="p-4">
             <h3 class="text-lg font-semibold">{{ blog.title }}</h3>
             <NuxtLink to="blog/list" class="flex items-center mt-3 space-x-3">

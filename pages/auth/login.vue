@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center items-center min-h-screen">
-    <UCard class="w-full max-w-md p-6 rounded-lg shadow-lg">
+    <UCard class="w-full max-w-md p-6 rounded-lg shadow-lg mt-4">
       <template #header>
         <div class="text-center">
           <UIcon name="i-heroicons-lock-closed" class="text-xl mb-2" />

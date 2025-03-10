@@ -7,7 +7,7 @@
 
       <UForm @submit="saveBlog" :state="form" class="space-y-6">
         <UFormGroup label="Blog Title" :error="errors.title">
-          <UInput v-model="form.title" placeholder="Enter blog title" @input="generateSlug" />
+          <UInput v-model="form.title" class="z-1" placeholder="Enter blog title" @input="generateSlug"/>
         </UFormGroup>
 
         <UFormGroup label="Blog Content" :error="errors.content">
@@ -74,8 +74,7 @@
 import { ref, reactive } from "vue";
 import Joi from "joi";
 import FilePond from "~/components/form/FilePond.vue";
-import CustomCkEditor from "../../components/form/CustomCkEditor.vue";
-
+import CustomCkEditor from "~/components/form/CustomCkEditor.vue";
 
 const form = reactive({
   title: "",

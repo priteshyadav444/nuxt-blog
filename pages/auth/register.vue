@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-center min-h-screen">
+  <div class="flex justify-center items-center min-h-screen mt-4">
     <UCard class="w-full max-w-md">
       <template #header>
         <h2 class="text-xl font-bold text-center">Create an Account</h2>

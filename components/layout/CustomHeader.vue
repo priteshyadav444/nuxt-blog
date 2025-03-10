@@ -1,5 +1,5 @@
 <template>
-    <header class="border-b bg-white dark:bg-gray-900 shadow-md mb-1">
+    <header class="border-b bg-white dark:bg-gray-900 shadow-md">
         <UContainer class="flex items-center justify-between py-4">
             <!-- Logo -->
             <NuxtLink to="/" class="text-xl font-bold flex items-center text-gray-900 dark:text-gray-100">
@@ -33,16 +33,9 @@
                 </template>
 
                 <!-- User Dropdown -->
-                <template v-else>
-                    <UDropdown>
+                <template v-if="!isLoggedIn">
+                    <UDropdown :items="menuItems">
                         <UButton icon="i-heroicons-user-circle" variant="ghost" class="p-2" />
-                        <template #menu>
-                            <UMenu>
-                                <UMenuItem to="/profile">Profile</UMenuItem>
-                                <UMenuItem to="/settings">Settings</UMenuItem>
-                                <UMenuItem @click="logoutUser">Logout</UMenuItem>
-                            </UMenu>
-                        </template>
                     </UDropdown>
                 </template>
             </div>
@@ -57,8 +50,12 @@ const searchQuery = ref('');
 const isLoggedIn = ref(false);
 const notificationCount = ref(3); // Example: Replace with real notification count
 
+const menuItems = [
+    [{ label: 'Profile', icon: 'i-heroicons-user', to: '/profile' }],
+    [{ label: 'Logout', icon: 'i-heroicons-arrow-left-on-rectangle', click: () => logoutUser() }]
+];
+
 const logoutUser = () => {
-    isLoggedIn.value = false;
-    console.log("User logged out");
+    console.log('User logged out');
 };
 </script>
